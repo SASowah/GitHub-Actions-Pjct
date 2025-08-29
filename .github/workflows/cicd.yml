@@ -22,6 +22,7 @@ jobs:
 
   security-check:
     runs-on: ubuntu-latets
+    needs: compile
 
     steps:
     - uses: actions/checkout@v4
