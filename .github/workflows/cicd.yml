@@ -1,6 +1,5 @@
 name: CICD Pipeline
 
-#on what conditons is pipeline triggered
 on:
   push:
     branches: [ "main" ]
