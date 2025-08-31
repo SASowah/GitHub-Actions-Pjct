@@ -103,7 +103,7 @@ jobs:
     runs-on: self-hosted
     needs: build_pjct_and_sonar_scan
     steps:
-    - uses: action/checkout@v4
+    - uses: actions/checkout@v4
     - name: Download JAR artifact
       uses: actions/download-artifact@v4
       with:
