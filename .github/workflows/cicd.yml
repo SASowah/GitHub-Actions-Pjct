@@ -73,7 +73,7 @@ jobs:
     - name: Build Project
       run: mvn package
 
-    - name: Upload JAR arttifact
+    - name: Upload JAR artifact
       uses: actions/upload-artifact@v4
       with:
         name: app-jar
@@ -159,7 +159,7 @@ jobs:
     - name: Configure Kubeconfig
       run: |
         mkdir -p $HOME/.kube
-        echo "${{ secrets.EKS_KUBECONFIG }}" > $home/.kube/config
+        echo "${{ secrets.EKS_KUBECONFIG }}" > $HOME/.kube/config
         
     - name: Deploy to EKS
       run: |
