@@ -9,18 +9,6 @@ data:
   root-password: VGVzdEAxMjM=
   username: cm9vdA==
 ---
-# MySQL PersistentVolumeClaim
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mysql-pvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
----
 # MySQL Deployment
 apiVersion: apps/v1
 kind: Deployment
@@ -54,11 +42,11 @@ spec:
           name: mysql
         resources:
           requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
             memory: "512Mi"
             cpu: "500m"
-          limits:
-            memory: "1Gi"
-            cpu: "1000m"
         livenessProbe:
           tcpSocket:
             port: 3306
@@ -76,8 +64,7 @@ spec:
           mountPath: /var/lib/mysql
       volumes:
       - name: mysql-storage
-        persistentVolumeClaim:
-          claimName: mysql-pvc
+        emptyDir: {}
 ---
 # MySQL Service
 apiVersion: v1
@@ -107,7 +94,7 @@ spec:
     spec:
       containers:
       - name: bankapp
-        image: adijaiswal/bankapp:v1.0.0
+        image: samsow/bankapp:latest
         ports:
         - containerPort: 8080
         env:

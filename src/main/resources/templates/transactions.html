@@ -1,129 +1,303 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Transaction History - Goldencat Bank</title>
+    <title>Transaction History - Premier Bank</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(to right, #000000, #ffd700);
-            color: #ffffff;
+        * {
             margin: 0;
             padding: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            flex-direction: column;
+            box-sizing: border-box;
         }
 
-        .navbar-custom {
-            background-color: rgba(0, 0, 0, 0.7);
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .navbar {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             position: fixed;
             top: 0;
             width: 100%;
             z-index: 1000;
+            padding: 1rem 0;
         }
 
-        .navbar-custom a {
-            color: #ffffff !important;
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: #1e3c72 !important;
+            display: flex;
+            align-items: center;
         }
 
-        .navbar-custom .navbar-brand {
-            font-weight: bold;
+        .navbar-brand i {
+            margin-right: 0.5rem;
+            color: #d4af37;
         }
 
-        .container {
-            max-width: 1000px;
-            margin-top: 80px; /* Reduced margin for the table to be closer to the top */
-            text-align: center;
+        .navbar-nav .nav-link {
+            color: #495057 !important;
+            font-weight: 500;
+            margin: 0 0.5rem;
+            transition: color 0.3s ease;
         }
 
-        h2 {
-            margin-bottom: 20px;
+        .navbar-nav .nav-link:hover {
+            color: #d4af37 !important;
         }
 
-        .table-custom {
-            background-color: rgba(0, 0, 0, 0.8); /* Darker background for better contrast */
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-            overflow-x: auto; /* Ensures table is responsive */
+        .page-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
         }
 
-        .table-striped tbody tr:nth-of-type(odd) {
-            background-color: rgba(255, 255, 255, 0.1); /* Slightly lighter row color */
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
         }
 
-        .table-striped td, .table-striped th {
-            color: #ffffff; /* White text color for visibility */
-            font-weight: bold; /* Bolder text for readability */
-            padding: 15px; /* Increase padding for better spacing */
-            border-bottom: 1px solid #ffd700; /* Yellow border for rows */
+        .transactions-card {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid #e9ecef;
+            overflow: hidden;
         }
 
-        .table-striped th {
-            background-color: rgba(255, 215, 0, 0.2); /* Light golden background for headers */
+        .card-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 1.5rem;
+            border-bottom: 1px solid #dee2e6;
         }
 
-        .text-success {
-            color: #28a745 !important;
+        .card-header h4 {
+            color: #1e3c72;
+            font-family: 'Playfair Display', serif;
+            margin: 0;
         }
 
-        .text-danger {
-            color: #dc3545 !important;
+        .table-container {
+            padding: 0;
+            overflow-x: auto;
         }
 
-        .custom-link {
-            color: #ffd700;
+        .table {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .table thead th {
+            background: #1e3c72;
+            color: white;
+            font-weight: 600;
+            border: none;
+            padding: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .transaction-type {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .type-deposit {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .type-withdraw {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .type-transfer-in {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .type-transfer-out {
+            background: #ffeaa7;
+            color: #856404;
+        }
+
+        .amount-positive {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .amount-negative {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #1e3c72;
             text-decoration: none;
-            font-weight: bold;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            margin-top: 2rem;
         }
 
-        .custom-link:hover {
-            color: #ffecb3;
-            text-decoration: underline;
+        .back-link:hover {
+            color: #d4af37;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .back-link i {
+            margin-right: 0.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #dee2e6;
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .table {
+                font-size: 0.85rem;
+            }
+            
+            .table thead th,
+            .table tbody td {
+                padding: 0.75rem 0.5rem;
+            }
         }
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-custom">
-    <a class="navbar-brand" href="#">Goldencat Bank</a>
-    <ul class="navbar-nav ml-auto">
-        <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" href="/transactions">Transactions</a></li>
-        <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
-    </ul>
-</nav>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-university"></i>
+                Premier Bank
+            </a>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/transactions">
+                        <i class="fas fa-history"></i> Transactions
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
-<div class="container">
-    <h2 class="text-center">Transaction History</h2>
-    <div class="table-responsive table-custom">
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Type</th>
-                <th>Amount</th>
-                <th>Date</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="transaction : ${transactions}">
-                <td th:text="${transaction.id}"></td>
-                <td th:text="${transaction.type}"></td>
-                <td th:text="${transaction.amount}"
-                    th:classappend="${transaction.type.contains('Transfer In') || transaction.type == 'Deposit'} ? 'text-success' : 'text-danger'">
-                    <span th:text="${transaction.type.contains('Transfer In') || transaction.type == 'Deposit'} ? '+$' + transaction.amount : '-$' + transaction.amount"></span>
-                </td>
-                <td th:text="${transaction.timestamp}"></td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="page-header">
+        <div class="container text-center">
+            <h1 class="page-title">
+                <i class="fas fa-history"></i> Transaction History
+            </h1>
+            <p class="mb-0">View all your account transactions</p>
+        </div>
     </div>
 
-    <p class="text-center"><a href="/dashboard" class="custom-link">Back to Dashboard</a></p>
-</div>
+    <div class="container">
+        <div class="transactions-card">
+            <div class="card-header">
+                <h4><i class="fas fa-list"></i> Recent Transactions</h4>
+            </div>
+            
+            <div class="table-container">
+                <table class="table" th:if="${transactions != null and !transactions.empty}">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag"></i> ID</th>
+                            <th><i class="fas fa-tag"></i> Type</th>
+                            <th><i class="fas fa-dollar-sign"></i> Amount</th>
+                            <th><i class="fas fa-calendar"></i> Date & Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="transaction : ${transactions}">
+                            <td th:text="${transaction.id}"></td>
+                            <td>
+                                <span class="transaction-type"
+                                      th:classappend="${transaction.type == 'Deposit'} ? 'type-deposit' : 
+                                                     ${transaction.type == 'Withdraw'} ? 'type-withdraw' : 
+                                                     ${transaction.type.contains('Transfer In')} ? 'type-transfer-in' : 'type-transfer-out'"
+                                      th:text="${transaction.type}">
+                                </span>
+                            </td>
+                            <td>
+                                <span th:classappend="${transaction.type.contains('Transfer In') || transaction.type == 'Deposit'} ? 'amount-positive' : 'amount-negative'">
+                                    <i th:class="${transaction.type.contains('Transfer In') || transaction.type == 'Deposit'} ? 'fas fa-plus' : 'fas fa-minus'"></i>
+                                    $<span th:text="${transaction.amount}"></span>
+                                </span>
+                            </td>
+                            <td th:text="${transaction.timestamp}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="empty-state" th:if="${transactions == null or transactions.empty}">
+                    <i class="fas fa-inbox"></i>
+                    <h5>No Transactions Found</h5>
+                    <p>You haven't made any transactions yet. Start by making a deposit or transfer.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <a href="/dashboard" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
 
 </body>
 </html>
