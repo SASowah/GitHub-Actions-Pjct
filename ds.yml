@@ -1,5 +1,15 @@
 ---
-# PersistentVolumeClaim for MySQL
+# MySQL Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret
+type: Opaque
+data:
+  root-password: VGVzdEAxMjM=
+  username: cm9vdA==
+---
+# MySQL PersistentVolumeClaim
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -9,7 +19,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi   # adjust size if needed
+      storage: 1Gi
 ---
 # MySQL Deployment
 apiVersion: apps/v1
@@ -17,27 +27,50 @@ kind: Deployment
 metadata:
   name: mysql
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: mysql
   strategy:
-    type: Recreate
+    type: RollingUpdate
   template:
     metadata:
       labels:
         app: mysql
     spec:
       containers:
-      - image: mysql:8
+      - image: mysql:8.0.35
         name: mysql
         env:
         - name: MYSQL_ROOT_PASSWORD
-          value: "Test@123"
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: root-password
         - name: MYSQL_DATABASE
           value: "bankappdb"
         ports:
         - containerPort: 3306
           name: mysql
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 3
         volumeMounts:
         - name: mysql-storage
           mountPath: /var/lib/mysql
@@ -79,11 +112,48 @@ spec:
         - containerPort: 8080
         env:
         - name: SPRING_DATASOURCE_URL
-          value: jdbc:mysql://mysql-service:3306/bankappdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+          value: jdbc:mysql://mysql-service:3306/bankappdb
+        - name: SPRING_DATASOURCE_SSL
+          value: "false"
+        - name: SPRING_DATASOURCE_TIMEZONE
+          value: "UTC"
+        - name: SPRING_DATASOURCE_ALLOW_PUBLIC_KEY_RETRIEVAL
+          value: "true"
         - name: SPRING_DATASOURCE_USERNAME
-          value: root
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: username
         - name: SPRING_DATASOURCE_PASSWORD
-          value: Test@123
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: root-password
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 3
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox:1.35
+        command: ['sh', '-c', 'timeout=300; while [ $timeout -gt 0 ]; do if nc -z mysql-service 3306; then echo "MySQL is ready"; exit 0; fi; echo "Waiting for MySQL... ($timeout seconds left)"; sleep 5; timeout=$((timeout-5)); done; echo "Timeout waiting for MySQL"; exit 1']
 ---
 # Bank Application Service
 apiVersion: v1
