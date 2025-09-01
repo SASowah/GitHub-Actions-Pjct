@@ -172,6 +172,12 @@ The project is configured for GitHub Actions with:
 4. Run tests and quality checks
 5. Submit a pull request
 
+## 🙏 Acknowledgments
+
+This project is based on the GitHub Actions project by [Aditya Jaiswal](https://github.com/jaiswaladi246/Github-Actions-Project). Special thanks for the comprehensive CI/CD pipeline implementation and Kubernetes deployment examples.
+
+**Original Repository:** https://github.com/jaiswaladi246/Github-Actions-Project
+
  📝 License
 
 This project is licensed under the MIT License.
